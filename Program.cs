@@ -1,4 +1,6 @@
 ﻿
+using ManagerApplicationSystem.Models;
+
 namespace StudentManagementSystem
 {
     internal class Program
@@ -141,10 +143,13 @@ namespace StudentManagementSystem
             string? name = Console.ReadLine();
             if (!string.IsNullOrWhiteSpace(name))
             {
-                if (studentlist.Any(n => n.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                var searchedstudent = studentlist.FirstOrDefault(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                if (searchedstudent != null)
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("student was found successfully");
+                    Console.WriteLine($"student was found successfully:");
+                    Console.WriteLine("----------------------------------");
+                    searchedstudent.PrintInfo();
                     Console.ResetColor();
                 }
                 else
