@@ -1,40 +1,12 @@
 ﻿using ManagerApplicationSystem.Enums;
+using ManagerApplicationSystem.Helpers;
 using ManagerApplicationSystem.Models;
 
 namespace ManagerApplicationSystem.Services
 {
     public class StudentService
     {
-        private  List<Student> studentlist = new();
-        
-        public int ReadInt(string message)
-        {
-            int inputValue;
-            while(true)
-            {
-                Console.WriteLine(message);
-                if (int.TryParse(Console.ReadLine(), out inputValue))
-                {
-                    return inputValue;
-                }
-                else
-                    ErrorMessage("Invalid input");
-            }
-        }
-        public double ReadDouble(string message)
-        {
-            double inputValue;
-            while (true)
-            {
-                Console.WriteLine(message);
-                if (double.TryParse(Console.ReadLine(), out inputValue))
-                {
-                    return inputValue;
-                }
-                else
-                    ErrorMessage("Invalid input");
-            }
-        }
+        private List<Student> studentlist = new();
         public void PrintMenu()
         {
             int input;
@@ -86,32 +58,24 @@ namespace ManagerApplicationSystem.Services
                                 Console.ResetColor();
                                 return;
                             default:
-                                ErrorMessage("Invalid input, please select a number between 1 and 7");
+                                ConsoleHelper.ErrorMessage("Invalid input, please select a number between 1 and 7");
                                 break;
                         }
                     }
                     else
                     {
-                        ErrorMessage("Invalid option number.");
+                        ConsoleHelper.ErrorMessage("Invalid option number.");
                     }
                 }
                 else
                 {
-                    ErrorMessage("Invalid input, please select a number between 1 and 7");
+                    ConsoleHelper.ErrorMessage("Invalid input, please select a number between 1 and 7");
                 }
                 Console.WriteLine("Please type any key to continue...");
                 Console.ReadKey();
             }
         }
-        public void ErrorMessage(string message)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("\n-----------------------------------");
-            Console.WriteLine("ERROR: " + message);
-            Console.WriteLine("-----------------------------------");
-            Console.ResetColor();
-        }
-        public  void AddStudent()
+        public void AddStudent()
         {
             int id;
 
@@ -125,7 +89,7 @@ namespace ManagerApplicationSystem.Services
                     {
                         if (studentlist.Any(x => x.Id == id))
                         {
-                            ErrorMessage("There is already a student with that Id, Please enter a new one.");
+                            ConsoleHelper.ErrorMessage("There is already a student with that Id, Please enter a new one.");
                             continue;
                         }
                         else
@@ -135,13 +99,13 @@ namespace ManagerApplicationSystem.Services
                     }
                     else
                     {
-                        ErrorMessage("Id can't be lower than or equal to Zero. please try again.");
+                        ConsoleHelper.ErrorMessage("Id can't be lower than or equal to Zero. please try again.");
                         continue;
                     }
                 }
                 else
                 {
-                    ErrorMessage("Invalid Id input. Please try again.");
+                    ConsoleHelper.ErrorMessage("Invalid Id input. Please try again.");
                 }
             }
             string? name;
@@ -155,7 +119,7 @@ namespace ManagerApplicationSystem.Services
                 }
                 else
                 {
-                    ErrorMessage("Invalid input");
+                    ConsoleHelper.ErrorMessage("Invalid input");
                 }
             }
             int age;
@@ -166,7 +130,7 @@ namespace ManagerApplicationSystem.Services
                 {
                     if (age <= 5 || age >= 40)
                     {
-                        ErrorMessage("Age must be higher than 5 years old and less than 40 years old. Please try again.");
+                        ConsoleHelper.ErrorMessage("Age must be higher than 5 years old and less than 40 years old. Please try again.");
                         continue;
                     }
                     else
@@ -174,7 +138,7 @@ namespace ManagerApplicationSystem.Services
                 }
                 else
                 {
-                    ErrorMessage("invalid age input. Please try again");
+                    ConsoleHelper.ErrorMessage("invalid age input. Please try again");
                     continue;
                 }
             }
@@ -186,18 +150,18 @@ namespace ManagerApplicationSystem.Services
                 if (double.TryParse(Console.ReadLine(), out grade))
                     if (grade < 0)
                     {
-                        ErrorMessage("How can a grade be less than zero? Please try again.");
+                        ConsoleHelper.ErrorMessage("How can a grade be less than zero? Please try again.");
                         continue;
                     }
                     else if (grade > 100)
                     {
-                        ErrorMessage("Please enter a grade that is lower than or equal to 100");
+                        ConsoleHelper.ErrorMessage("Please enter a grade that is lower than or equal to 100");
                     }
                     else
                         break;
                 else
                 {
-                    ErrorMessage("invalid grade input. Please try again");
+                    ConsoleHelper.ErrorMessage("invalid grade input. Please try again");
                     continue;
                 }
             }
@@ -207,11 +171,11 @@ namespace ManagerApplicationSystem.Services
             Console.WriteLine("student added successfully");
             Console.ResetColor();
         }
-        public  void SearchStudent()
+        public void SearchStudent()
         {
             if (studentlist.Count() == 0)
             {
-                ErrorMessage("The list is empty, No students are available to search for");
+                ConsoleHelper.ErrorMessage("The list is empty, No students are available to search for");
                 return;
             }
             Console.WriteLine("Select an option:");
@@ -221,15 +185,15 @@ namespace ManagerApplicationSystem.Services
             Console.Write("input:");
             if (int.TryParse(Console.ReadLine(), out int value))
             {
-                if (value ==1)
+                if (value == 1)
                 {
                     Console.Write("please enter the Id of the student you want to search for:");
-                    if (int.TryParse(Console.ReadLine() , out int id))
+                    if (int.TryParse(Console.ReadLine(), out int id))
                     {
                         var studenttosearch = studentlist.FirstOrDefault(x => x.Id == id);
                         if (studenttosearch != null)
                         {
-                            Console.ForegroundColor= ConsoleColor.Green;
+                            Console.ForegroundColor = ConsoleColor.Green;
                             Console.WriteLine("=========================");
                             studenttosearch.PrintInfo();
                             Console.WriteLine("=========================");
@@ -237,12 +201,12 @@ namespace ManagerApplicationSystem.Services
                         }
                         else
                         {
-                            ErrorMessage("Student not found");
+                            ConsoleHelper.ErrorMessage("Student not found");
                         }
                     }
                     else
                     {
-                        ErrorMessage("Invalid Input");
+                        ConsoleHelper.ErrorMessage("Invalid Input");
                     }
                 }
                 else if (value == 2)
@@ -265,13 +229,13 @@ namespace ManagerApplicationSystem.Services
                         }
                         else
                         {
-                            ErrorMessage("Student not found");
+                            ConsoleHelper.ErrorMessage("Student not found");
                             return;
                         }
                     }
                     else
                     {
-                        ErrorMessage("Please enter a VALID name");
+                        ConsoleHelper.ErrorMessage("Please enter a VALID name");
                     }
                 }
                 else if (value == 3)
@@ -298,12 +262,12 @@ namespace ManagerApplicationSystem.Services
                                 }
                                 else
                                 {
-                                    ErrorMessage("No matching grades");
+                                    ConsoleHelper.ErrorMessage("No matching grades");
                                 }
                             }
                             else
                             {
-                                ErrorMessage("Invalid Grade input.");
+                                ConsoleHelper.ErrorMessage("Invalid Grade input.");
                             }
                         }
                         else if (Value == 2)
@@ -321,12 +285,12 @@ namespace ManagerApplicationSystem.Services
                                 }
                                 else
                                 {
-                                    ErrorMessage("Invalid Grade input.");
+                                    ConsoleHelper.ErrorMessage("Invalid Grade input.");
                                 }
                             }
                             else
                             {
-                                ErrorMessage("Invalid Grade input.");
+                                ConsoleHelper.ErrorMessage("Invalid Grade input.");
                             }
                         }
                         else if (Value == 3)
@@ -344,35 +308,35 @@ namespace ManagerApplicationSystem.Services
                                 }
                                 else
                                 {
-                                    ErrorMessage("No matching grades");
+                                    ConsoleHelper.ErrorMessage("No matching grades");
                                 }
                             }
                             else
                             {
-                                ErrorMessage("Invalid Grade input.");
+                                ConsoleHelper.ErrorMessage("Invalid Grade input.");
                             }
                         }
                         else
                         {
-                            ErrorMessage("Please type a VALID number.");
+                            ConsoleHelper.ErrorMessage("Please type a VALID number.");
                         }
                     }
                     else
                     {
-                        ErrorMessage("Invalid input");
+                        ConsoleHelper.ErrorMessage("Invalid input");
                     }
                 }
             }
             else
             {
-                ErrorMessage("invalid input");
+                ConsoleHelper.ErrorMessage("invalid input");
             }
         }
-        public  void DeleteStudent()
+        public void DeleteStudent()
         {
             if (studentlist.Count() == 0)
             {
-                ErrorMessage("No students are available to delete");
+                ConsoleHelper.ErrorMessage("No students are available to delete");
                 return;
             }
             Console.WriteLine("Select an option:");
@@ -393,33 +357,33 @@ namespace ManagerApplicationSystem.Services
                         }
                         else
                         {
-                            ErrorMessage("invalid id input. please try again.");
+                            ConsoleHelper.ErrorMessage("invalid id input. please try again.");
                         }
                     }
                     var studenttodelete = studentlist.FirstOrDefault(x => x.Id == id);
                     if (studenttodelete != null)
                     {
-                            Console.WriteLine("Are you sure? \nif yes type : y \nif not type anything else.");
-                            Console.Write("Input:");
-                            string? value = Console.ReadLine();
-                            if (!string.IsNullOrWhiteSpace(value))
+                        Console.WriteLine("Are you sure? \nif yes type : y \nif not type anything else.");
+                        Console.Write("Input:");
+                        string? value = Console.ReadLine();
+                        if (!string.IsNullOrWhiteSpace(value))
+                        {
+                            if (value.ToLowerInvariant() == "y")
                             {
-                                if (value.ToLowerInvariant() == "y")
-                                {
-                                    studentlist.Remove(studenttodelete);
-                                    Console.ForegroundColor = ConsoleColor.Green;
-                                    Console.WriteLine("Student Deleted successfully.");
-                                    Console.ResetColor();
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Deletion reverted");
-                                }
+                                studentlist.Remove(studenttodelete);
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Student Deleted successfully.");
+                                Console.ResetColor();
                             }
+                            else
+                            {
+                                Console.WriteLine("Deletion reverted");
+                            }
+                        }
                     }
                     else
                     {
-                        ErrorMessage("Student not found.");
+                        ConsoleHelper.ErrorMessage("Student not found.");
                     }
 
                 }
@@ -436,12 +400,12 @@ namespace ManagerApplicationSystem.Services
                         }
                         else
                         {
-                            ErrorMessage("Invalid input.");
+                            ConsoleHelper.ErrorMessage("Invalid input.");
                         }
                     }
                     if (studentlist.Count(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) > 1)
                     {
-                        ErrorMessage("There is more than one student with the same name that you entered... Please consider using his Id in this case.");
+                        ConsoleHelper.ErrorMessage("There is more than one student with the same name that you entered... Please consider using his Id in this case.");
                     }
                     else if (studentlist.Where(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)).ToList().Count() == 1)
                     {
@@ -467,35 +431,35 @@ namespace ManagerApplicationSystem.Services
                             }
                             else
                             {
-                                ErrorMessage("Invalid input. Please type y or n");
+                                ConsoleHelper.ErrorMessage("Invalid input. Please type y or n");
                             }
 
                         }
                         else
                         {
-                            ErrorMessage("Name not found");
+                            ConsoleHelper.ErrorMessage("Name not found");
                         }
                     }
                     else
                     {
-                        ErrorMessage("Student not found");
+                        ConsoleHelper.ErrorMessage("Student not found");
                     }
                 }
                 else
                 {
-                    ErrorMessage("Please select a number [1 or 2]");
+                    ConsoleHelper.ErrorMessage("Please select a number [1 or 2]");
                 }
             }
             else
             {
-                ErrorMessage("Invalid input.");
+                ConsoleHelper.ErrorMessage("Invalid input.");
             }
         }
-        public  void ListStudents()
+        public void ListStudents()
         {
             if (studentlist.Count() == 0)
             {
-                ErrorMessage("No students are available to list");
+                ConsoleHelper.ErrorMessage("No students are available to list");
                 return;
             }
             Console.WriteLine("please select an option:\n[1] List all students.\n[2] Sort according to the highest grade.");
@@ -525,20 +489,20 @@ namespace ManagerApplicationSystem.Services
                 }
                 else
                 {
-                    ErrorMessage("invalid input");
+                    ConsoleHelper.ErrorMessage("invalid input");
 
                 }
             }
             else
             {
-                ErrorMessage("invalid input");
+                ConsoleHelper.ErrorMessage("invalid input");
             }
         }
-        public  void UpdateStudent()
+        public void UpdateStudent()
         {
             if (studentlist.Count() == 0)
             {
-                ErrorMessage("No students are available to update");
+                ConsoleHelper.ErrorMessage("No students are available to update");
                 return;
             }
             Console.Write("please enter the Id of the student you want to apply changes on:");
@@ -575,7 +539,7 @@ namespace ManagerApplicationSystem.Services
                             }
                             else
                             {
-                                ErrorMessage("invalid new age input");
+                                ConsoleHelper.ErrorMessage("invalid new age input");
                             }
                         }
                         else if (Value == 3)
@@ -591,7 +555,7 @@ namespace ManagerApplicationSystem.Services
                             }
                             else
                             {
-                                ErrorMessage("invalid new grade input");
+                                ConsoleHelper.ErrorMessage("invalid new grade input");
                             }
                         }
                         else if (Value == 4)
@@ -612,37 +576,37 @@ namespace ManagerApplicationSystem.Services
                                 }
                                 else
                                 {
-                                    ErrorMessage("invalid new grade input");
+                                    ConsoleHelper.ErrorMessage("invalid new grade input");
                                 }
                             }
                             else
                             {
-                                ErrorMessage("invalid new age input");
+                                ConsoleHelper.ErrorMessage("invalid new age input");
                             }
                         }
                     }
                     else
                     {
-                        ErrorMessage("invalid input");
+                        ConsoleHelper.ErrorMessage("invalid input");
 
                     }
                 }
                 else
                 {
-                    ErrorMessage("Student not found.");
+                    ConsoleHelper.ErrorMessage("Student not found.");
                 }
             }
 
             else
             {
-                ErrorMessage("invalid input.");
+                ConsoleHelper.ErrorMessage("invalid input.");
             }
         }
-        public  void ShowStats()
+        public void ShowStats()
         {
             if (studentlist.Count() == 0)
             {
-                ErrorMessage("The list is empty, No students are available to show their stats");
+                ConsoleHelper.ErrorMessage("The list is empty, No students are available to show their stats");
                 return;
             }
 
