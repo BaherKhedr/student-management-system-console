@@ -1,18 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ManagerApplicationSystem.Enums;
+using ManagerApplicationSystem.Models;
 
-namespace ManagerApplicationSystem.Models
+namespace ManagerApplicationSystem.Services
 {
     public class StudentService
     {
+        private  List<Student> studentlist = new();
+        
+        public int ReadInt(string message)
+        {
+            int inputValue;
+            while(true)
+            {
+                Console.WriteLine(message);
+                if (int.TryParse(Console.ReadLine(), out inputValue))
+                {
+                    return inputValue;
+                }
+                else
+                    ErrorMessage("Invalid input");
+            }
+        }
+        public double ReadDouble(string message)
+        {
+            double inputValue;
+            while (true)
+            {
+                Console.WriteLine(message);
+                if (double.TryParse(Console.ReadLine(), out inputValue))
+                {
+                    return inputValue;
+                }
+                else
+                    ErrorMessage("Invalid input");
+            }
+        }
         public void PrintMenu()
         {
-            var studentlist = new List<Student>();
             int input;
-            var students = new StudentService();
+
             while (true)
             {
                 Console.Clear();
@@ -28,43 +54,50 @@ namespace ManagerApplicationSystem.Models
 
                 if (int.TryParse(Console.ReadLine(), out input))
                 {
-                    Console.Clear();
-
-                    switch (input)
+                    if (Enum.IsDefined(typeof(MenuOptions), input))
                     {
-                        case 1:
-                            students.AddStudent(studentlist);
-                            break;
-                        case 2:
-                            students.SearchStudent(studentlist);
-                            break;
-                        case 3:
-                            students.DeleteStudent(studentlist);
-                            break;
-                        case 4:
-                            students.ListStudents(studentlist);
-                            break;
-                        case 5:
-                            students.UpdateStudent(studentlist);
-                            break;
-                        case 6:
-                            students.ShowStats(studentlist);
-                            break;
-                        case 7:
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("Application stopped successfully");
-                            Console.ResetColor();
-                            return;
-                        default:
-                            students.ErrorMessage("Invalid input, please select a number between 1 and 7");
-                            break;
+                        MenuOptions options = (MenuOptions)input;
 
+                        Console.Clear();
 
+                        switch (options)
+                        {
+                            case MenuOptions.Add:
+                                AddStudent();
+                                break;
+                            case MenuOptions.Search:
+                                SearchStudent();
+                                break;
+                            case MenuOptions.Delete:
+                                DeleteStudent();
+                                break;
+                            case MenuOptions.List:
+                                ListStudents();
+                                break;
+                            case MenuOptions.Update:
+                                UpdateStudent();
+                                break;
+                            case MenuOptions.Stats:
+                                ShowStats();
+                                break;
+                            case MenuOptions.Exit:
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Application stopped successfully");
+                                Console.ResetColor();
+                                return;
+                            default:
+                                ErrorMessage("Invalid input, please select a number between 1 and 7");
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        ErrorMessage("Invalid option number.");
                     }
                 }
                 else
                 {
-                    students.ErrorMessage("Invalid input, please select a number between 1 and 7");
+                    ErrorMessage("Invalid input, please select a number between 1 and 7");
                 }
                 Console.WriteLine("Please type any key to continue...");
                 Console.ReadKey();
@@ -78,12 +111,14 @@ namespace ManagerApplicationSystem.Models
             Console.WriteLine("-----------------------------------");
             Console.ResetColor();
         }
-        public  void AddStudent(List<Student> studentlist)
+        public  void AddStudent()
         {
             int id;
+
             while (true)
             {
                 Console.Write("Please enter the student's Id:");
+
                 if (int.TryParse(Console.ReadLine(), out id))
                 {
                     if (id > 0)
@@ -172,7 +207,7 @@ namespace ManagerApplicationSystem.Models
             Console.WriteLine("student added successfully");
             Console.ResetColor();
         }
-        public  void SearchStudent(List<Student> studentlist)
+        public  void SearchStudent()
         {
             if (studentlist.Count() == 0)
             {
@@ -216,13 +251,16 @@ namespace ManagerApplicationSystem.Models
                     string? name = Console.ReadLine();
                     if (!string.IsNullOrWhiteSpace(name))
                     {
-                        var searchedstudent = studentlist.FirstOrDefault(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-                        if (searchedstudent != null)
+                        var searchedstudent = studentlist.Where(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)).ToList();
+                        if (searchedstudent.Any())
                         {
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"student was found successfully:");
+                            Console.WriteLine($"students was found successfully:");
                             Console.WriteLine("----------------------------------");
-                            searchedstudent.PrintInfo();
+                            foreach (var student in searchedstudent)
+                            {
+                                student.PrintInfo();
+                            }
                             Console.ResetColor();
                         }
                         else
@@ -236,7 +274,7 @@ namespace ManagerApplicationSystem.Models
                         ErrorMessage("Please enter a VALID name");
                     }
                 }
-                else if (value == 2)
+                else if (value == 3)
                 {
                     Console.WriteLine("Select:");
                     Console.WriteLine("[1] Show students with grade HIGHER than your input.");
@@ -330,7 +368,7 @@ namespace ManagerApplicationSystem.Models
                 ErrorMessage("invalid input");
             }
         }
-        public  void DeleteStudent(List<Student> studentlist)
+        public  void DeleteStudent()
         {
             if (studentlist.Count() == 0)
             {
@@ -358,11 +396,9 @@ namespace ManagerApplicationSystem.Models
                             ErrorMessage("invalid id input. please try again.");
                         }
                     }
-                    if (studentlist.Any(x => x.Id == id))
+                    var studenttodelete = studentlist.FirstOrDefault(x => x.Id == id);
+                    if (studenttodelete != null)
                     {
-                        var studenttodelete = studentlist.FirstOrDefault(x => x.Id == id);
-                        if (studenttodelete != null)
-                        {
                             Console.WriteLine("Are you sure? \nif yes type : y \nif not type anything else.");
                             Console.Write("Input:");
                             string? value = Console.ReadLine();
@@ -380,7 +416,6 @@ namespace ManagerApplicationSystem.Models
                                     Console.WriteLine("Deletion reverted");
                                 }
                             }
-                        }
                     }
                     else
                     {
@@ -404,7 +439,7 @@ namespace ManagerApplicationSystem.Models
                             ErrorMessage("Invalid input.");
                         }
                     }
-                    if (studentlist.Where(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)).ToList().Count() > 1)
+                    if (studentlist.Count(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) > 1)
                     {
                         ErrorMessage("There is more than one student with the same name that you entered... Please consider using his Id in this case.");
                     }
@@ -456,7 +491,7 @@ namespace ManagerApplicationSystem.Models
                 ErrorMessage("Invalid input.");
             }
         }
-        public  void ListStudents(List<Student> studentlist)
+        public  void ListStudents()
         {
             if (studentlist.Count() == 0)
             {
@@ -499,7 +534,7 @@ namespace ManagerApplicationSystem.Models
                 ErrorMessage("invalid input");
             }
         }
-        public  void UpdateStudent(List<Student> studentlist)
+        public  void UpdateStudent()
         {
             if (studentlist.Count() == 0)
             {
@@ -603,7 +638,7 @@ namespace ManagerApplicationSystem.Models
                 ErrorMessage("invalid input.");
             }
         }
-        public  void ShowStats(List<Student> studentlist)
+        public  void ShowStats()
         {
             if (studentlist.Count() == 0)
             {
@@ -621,6 +656,8 @@ namespace ManagerApplicationSystem.Models
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("======================================================");
             Console.ResetColor();
+
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"The highest grade is: {highest.Name} --> {highest.Grade}");
             Console.ResetColor();
 
@@ -649,6 +686,5 @@ namespace ManagerApplicationSystem.Models
             Console.ResetColor();
 
         }
-
     }
 }
