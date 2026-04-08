@@ -13,8 +13,8 @@ namespace ManagerApplicationSystem.Helpers
             int inputValue;
             while (true)
             {
-                Console.WriteLine(message);
-                if (int.TryParse(Console.ReadLine(), out inputValue))
+                Console.Write(message);
+                if (int.TryParse(Console.ReadLine(), out inputValue) && inputValue > 0)
                 {
                     return inputValue;
                 }
@@ -27,13 +27,30 @@ namespace ManagerApplicationSystem.Helpers
             double inputValue;
             while (true)
             {
-                Console.WriteLine(message);
-                if (double.TryParse(Console.ReadLine(), out inputValue))
+                Console.Write(message);
+                if (double.TryParse(Console.ReadLine(), out inputValue) && inputValue > 0)
                 {
                     return inputValue;
                 }
                 else
                     ConsoleHelper.ErrorMessage("Invalid input");
+            }
+        }
+        public static string ReadString(string message)
+        {
+            string? inputValue;
+            while (true)
+            {
+                Console.Write(message);
+                inputValue = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(inputValue))
+                {
+                    return inputValue;
+                }
+                else
+                {
+                    ConsoleHelper.ErrorMessage("Invalid input.");
+                }
             }
         }
     }
