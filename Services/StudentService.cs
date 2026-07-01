@@ -3,6 +3,7 @@ using ManagerApplicationSystem.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,18 +32,9 @@ namespace ManagerApplicationSystem.Services
         {
             return studentlist.Where(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)).ToList();
         }
-        public List<Student> GetStudentByGradeHigherThan(double Grade)
+        public List<Student> GetStudentByGrade(Func<Student, bool> predicate)
         {
-            return studentlist.Where(s => s.Grade > Grade).ToList();
-        }
-        public List<Student> GetStudentByGradeLowerThan(double Grade)
-        {
-            return studentlist.Where(s => s.Grade < Grade).ToList();
-
-        }
-        public List<Student> GetStudentByGradeEqualTo(double Grade)
-        {
-            return studentlist.Where(s => s.Grade == Grade).ToList();
+            return studentlist.Where(predicate).ToList();
         }
         public Student? GetHighestGrade()
         {

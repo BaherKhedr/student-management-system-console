@@ -166,7 +166,7 @@ namespace StudentManagementSystem
                                                 Console.Clear();
 
                                                 var SearchedGrade1 = InputHelper.ReadDouble("Please enter the Grade:");
-                                                var GradeHigherThan = studentServices.GetStudentByGradeHigherThan(SearchedGrade1);
+                                                var GradeHigherThan = studentServices.GetStudentByGrade(b => b.Grade > SearchedGrade1);
                                                 if (GradeHigherThan.Any())
                                                 {
                                                     ConsoleHelper.PrintStudents(GradeHigherThan);
@@ -180,7 +180,7 @@ namespace StudentManagementSystem
                                                 Console.Clear();
 
                                                 var SearchedGrade2 = InputHelper.ReadDouble("Please enter the Grade:");
-                                                var GradeLowerThan = studentServices.GetStudentByGradeLowerThan(SearchedGrade2);
+                                                var GradeLowerThan = studentServices.GetStudentByGrade(b => b.Grade < SearchedGrade2);
                                                 if (GradeLowerThan.Any())
                                                 {
                                                     ConsoleHelper.PrintStudents(GradeLowerThan);
@@ -193,7 +193,7 @@ namespace StudentManagementSystem
                                                 Console.Clear();
 
                                                 var SearchedGrade3 = InputHelper.ReadDouble("Please enter the Grade:");
-                                                var GradeEqualTo = studentServices.GetStudentByGradeEqualTo(SearchedGrade3);
+                                                var GradeEqualTo = studentServices.GetStudentByGrade(b => b.Grade == SearchedGrade3);
                                                 if (GradeEqualTo.Any())
                                                 {
                                                     ConsoleHelper.PrintStudents(GradeEqualTo);
@@ -271,7 +271,7 @@ namespace StudentManagementSystem
                                         }
                                         else
                                         {
-                                            ConsoleHelper.ErrorMessage("Student with this Id not found.");
+                                            ConsoleHelper.ErrorMessage("Student with this Id was not found.");
 
                                             ConsoleHelper.PressAnyKeyToContinue();
                                         }
