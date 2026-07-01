@@ -28,7 +28,7 @@ namespace ManagerApplicationSystem.Helpers
             while (true)
             {
                 Console.Write(message);
-                if (double.TryParse(Console.ReadLine(), out inputValue) && inputValue > 0)
+                if (double.TryParse(Console.ReadLine(), out inputValue) && inputValue >= 0)
                 {
                     return inputValue;
                 }
