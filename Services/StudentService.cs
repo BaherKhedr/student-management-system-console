@@ -11,7 +11,7 @@ namespace ManagerApplicationSystem.Services
 {
     class StudentService
     {
-        private List<Student> studentlist = new();
+        private List<Student> studentlist = new(); // Db Connection
         public bool IsEmpty()
         {
             return !studentlist.Any();
@@ -24,25 +24,21 @@ namespace ManagerApplicationSystem.Services
         {
             return studentlist.Any(s => s.Id == id);
         }
-        public Student? GetStudentById(int id)
+        public Student? GetStudent(Func<Student , bool> predicate)
         {
-            return studentlist.FirstOrDefault(s => s.Id == id);
+            return studentlist.FirstOrDefault(predicate);
         }
-        public List<Student> GetStudentByName(string name)
-        {
-            return studentlist.Where(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)).ToList();
-        }
-        public List<Student> GetStudentByGrade(Func<Student, bool> predicate)
+        public List<Student> GetStudents(Func<Student , bool> predicate)
         {
             return studentlist.Where(predicate).ToList();
         }
         public Student? GetHighestGrade()
         {
-            return studentlist.OrderByDescending(s => s.Grade).FirstOrDefault();
+            return studentlist.MaxBy(s => s.Grade); // maxby == orderbydescending + first or default
         }
         public Student? GetLowestGrade()
         {
-            return studentlist.OrderBy(s => s.Grade).FirstOrDefault();
+            return studentlist.MinBy(s => s.Grade);
         }
         public double AverageGrade()
         {
@@ -50,11 +46,11 @@ namespace ManagerApplicationSystem.Services
         }
         public int GetPassedCount()
         {
-            return studentlist.Where(s => s.Grade >= 50).Count();
+            return studentlist.Count(s => s.Grade >= 50);
         }
         public int GetFailedCount()
         {
-            return studentlist.Where(s => s.Grade < 50).Count();
+            return studentlist.Count(s => s.Grade < 50);
         }
         public void AddStudent(Student student)
         {
@@ -62,38 +58,31 @@ namespace ManagerApplicationSystem.Services
         }
         public bool DeleteStudentById(int id)
         {
-            var student = studentlist.FirstOrDefault(s => s.Id == id);
-            if (student != null)
-            {
-                studentlist.Remove(student);
-                return true;
-            }
-            else
+            var student = GetStudent(s => s.Id == id);
+            if (student == null)
             {
                 return false;
             }
+            studentlist.Remove(student);
+            return true;
         }
         public void DeleteStudentByName(string name)
         {
-            var students = studentlist.Where(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            var student = GetStudent(s =>s.Name.Equals(name , StringComparison.OrdinalIgnoreCase));
+            if (student != null)
+            studentlist.Remove(student);
+        }
+        public List<Student> ListStudents(Func<IEnumerable<Student> , IEnumerable<Student>> sorter , Func<Student , bool>? filter = null)
+        {
+            IEnumerable<Student> students = studentlist;
 
-            studentlist.Remove(students.First());
+            if (filter != null)
+                students = students.Where(filter);
+
+            students = sorter(students);
+
+            return students.ToList();
         }
-        public List<Student> ListAllStudentsAccordingToId()
-        {
-            return studentlist.ToList();
-        }
-        public List<Student> ListAllStudentsAccordingToIdFilteredByAge(int Age)
-        {
-            return studentlist.Where(s => s.Age == Age).ToList();
-        }
-        public List<Student> ListAllStudentsAccordingToGrade()
-        {
-            return studentlist.OrderByDescending(s => s.Grade).ToList();
-        }
-        public List<Student> ListAllStudentsAccordingToGradeFilteredByAge(int Age)
-        {
-            return studentlist.OrderByDescending(s => s.Grade).Where(s => s.Age == Age).ToList();
-        }
+        
     }
 }

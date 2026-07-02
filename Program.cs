@@ -124,7 +124,7 @@ namespace StudentManagementSystem
                                         Console.Clear();
 
                                         int id = InputHelper.ReadInt("Please enter the Id:");
-                                        var searchedId = studentServices.GetStudentById(id);
+                                        var searchedId = studentServices.GetStudent(b => b.Id == id);
                                         if (searchedId != null)
                                         {
                                             ConsoleHelper.PrintStudent(searchedId);
@@ -140,7 +140,7 @@ namespace StudentManagementSystem
                                         Console.Clear();
 
                                         string SearchedName = InputHelper.ReadString("Please enter the Name:");
-                                        var studentsSearchedByName = studentServices.GetStudentByName(SearchedName);
+                                        var studentsSearchedByName = studentServices.GetStudents(x => x.Name.Equals(SearchedName, StringComparison.OrdinalIgnoreCase));
                                         if (studentsSearchedByName.Any())
                                         {
                                             ConsoleHelper.PrintStudents(studentsSearchedByName);
@@ -166,7 +166,7 @@ namespace StudentManagementSystem
                                                 Console.Clear();
 
                                                 var SearchedGrade1 = InputHelper.ReadDouble("Please enter the Grade:");
-                                                var GradeHigherThan = studentServices.GetStudentByGrade(b => b.Grade > SearchedGrade1);
+                                                var GradeHigherThan = studentServices.GetStudents(b => b.Grade > SearchedGrade1);
                                                 if (GradeHigherThan.Any())
                                                 {
                                                     ConsoleHelper.PrintStudents(GradeHigherThan);
@@ -180,7 +180,7 @@ namespace StudentManagementSystem
                                                 Console.Clear();
 
                                                 var SearchedGrade2 = InputHelper.ReadDouble("Please enter the Grade:");
-                                                var GradeLowerThan = studentServices.GetStudentByGrade(b => b.Grade < SearchedGrade2);
+                                                var GradeLowerThan = studentServices.GetStudents(b => b.Grade < SearchedGrade2);
                                                 if (GradeLowerThan.Any())
                                                 {
                                                     ConsoleHelper.PrintStudents(GradeLowerThan);
@@ -193,7 +193,7 @@ namespace StudentManagementSystem
                                                 Console.Clear();
 
                                                 var SearchedGrade3 = InputHelper.ReadDouble("Please enter the Grade:");
-                                                var GradeEqualTo = studentServices.GetStudentByGrade(b => b.Grade == SearchedGrade3);
+                                                var GradeEqualTo = studentServices.GetStudents(b => b.Grade == SearchedGrade3);
                                                 if (GradeEqualTo.Any())
                                                 {
                                                     ConsoleHelper.PrintStudents(GradeEqualTo);
@@ -235,7 +235,7 @@ namespace StudentManagementSystem
                                     case 1:
                                         Id = InputHelper.ReadInt("Please enter the Id:");
 
-                                        var deletedStudentUsingId = studentServices.GetStudentById(Id);
+                                        var deletedStudentUsingId = studentServices.GetStudent(b => b.Id == Id);
                                         if (deletedStudentUsingId != null)
                                         {
                                             if (deletedStudentUsingId != null)
@@ -278,7 +278,7 @@ namespace StudentManagementSystem
                                         break;
                                     case 2:
                                         var name = InputHelper.ReadString("Please enter his name:");
-                                        var deletedStudentUsingName = studentServices.GetStudentByName(name);
+                                        var deletedStudentUsingName = studentServices.GetStudents(b => b.Name.Equals(name , StringComparison.OrdinalIgnoreCase));
                                         if (deletedStudentUsingName.Any())
                                         {
                                             if (deletedStudentUsingName.Count() == 1)
@@ -352,15 +352,16 @@ namespace StudentManagementSystem
                                             case "y":
                                                 Console.WriteLine("Enter Age.");
                                                 Age = InputHelper.ReadInt("Input:");
-                                                if (studentServices.ListAllStudentsAccordingToIdFilteredByAge(Age).Count() == 0)
+                                                var students = studentServices.ListStudents(s => s.OrderBy(s => s.Id), s => s.Age == Age);
+                                                if (!students.Any())
                                                 {
                                                     ConsoleHelper.ErrorMessage("No students with this Age were found.");
                                                     break;
                                                 }
-                                                ConsoleHelper.PrintStudents(studentServices.ListAllStudentsAccordingToIdFilteredByAge(Age));
+                                                ConsoleHelper.PrintStudents(students);
                                                 break;
                                             case "n":
-                                                ConsoleHelper.PrintStudents(studentServices.ListAllStudentsAccordingToId());
+                                                ConsoleHelper.PrintStudents(studentServices.ListStudents(s=>s.OrderBy(s=>s.Id)));
                                                 break;
                                             default:
                                                 ConsoleHelper.ErrorMessage();
@@ -375,15 +376,16 @@ namespace StudentManagementSystem
                                             case "y":
                                                 Console.WriteLine("Enter Age.");
                                                 Age = InputHelper.ReadInt("Input:");
-                                                if (studentServices.ListAllStudentsAccordingToGradeFilteredByAge(Age).Count() == 0)
+                                                var students = studentServices.ListStudents(s => s.OrderByDescending(s => s.Grade), s => s.Age == Age);
+                                                if (!students.Any())
                                                 {
                                                     ConsoleHelper.ErrorMessage("No students with this Age were found.");
                                                     break;
                                                 }
-                                                ConsoleHelper.PrintStudents(studentServices.ListAllStudentsAccordingToGradeFilteredByAge(Age));
+                                                ConsoleHelper.PrintStudents(students);
                                                 break;
                                             case "n":
-                                                ConsoleHelper.PrintStudents(studentServices.ListAllStudentsAccordingToGrade());
+                                                ConsoleHelper.PrintStudents(studentServices.ListStudents(s => s.OrderByDescending(s=>s.Grade)));
                                                 break;
                                             default:
                                                 ConsoleHelper.ErrorMessage();
@@ -411,7 +413,7 @@ namespace StudentManagementSystem
                                 Console.Clear();
 
                                 Id = InputHelper.ReadInt("Please enter the Id for the student you wish to update:");
-                                var studenToUpdate = studentServices.GetStudentById(Id);
+                                var studenToUpdate = studentServices.GetStudent( b=> b.Id == Id);
                                 if (studenToUpdate != null)
                                 {
                                     Console.WriteLine("Select:");
