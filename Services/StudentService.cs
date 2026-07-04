@@ -1,8 +1,10 @@
-﻿using ManagerApplicationSystem.Helpers;
+﻿using ManagerApplicationSystem.Data;
+using ManagerApplicationSystem.Helpers;
 using ManagerApplicationSystem.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,70 +13,80 @@ namespace ManagerApplicationSystem.Services
 {
     class StudentService
     {
+        private readonly AppDbContext _context;
+
+        public StudentService(AppDbContext context)
+        {
+            _context = context;
+        }
         private List<Student> studentlist = new(); // Db Connection
         public bool IsEmpty()
         {
-            return !studentlist.Any();
+            return !_context.Students.Any();
         }
         public int Count()
         {
-            return studentlist.Count();
+            return _context.Students.Count();
         }
         public bool IdExists(int id)
         {
-            return studentlist.Any(s => s.Id == id);
+            return _context.Students.Any(s => s.Id == id);
         }
-        public Student? GetStudent(Func<Student , bool> predicate)
+        public Student? GetStudent(Func<Student, bool> predicate)
         {
-            return studentlist.FirstOrDefault(predicate);
+            return _context.Students.FirstOrDefault(predicate);
         }
-        public List<Student> GetStudents(Func<Student , bool> predicate)
+        public List<Student> GetStudents(Func<Student, bool> predicate)
         {
-            return studentlist.Where(predicate).ToList();
+            return _context.Students.Where(predicate).ToList();
         }
         public Student? GetHighestGrade()
         {
-            return studentlist.MaxBy(s => s.Grade); // maxby == orderbydescending + first or default
+            return _context.Students.OrderByDescending(s => s.Grade).FirstOrDefault(); // maxby == orderbydescending + first or default
         }
         public Student? GetLowestGrade()
         {
-            return studentlist.MinBy(s => s.Grade);
+            return _context.Students.OrderBy(s => s.Grade).FirstOrDefault();
         }
         public double AverageGrade()
         {
-            return studentlist.Average(s => s.Grade);
+            return _context.Students.Average(s => s.Grade);
         }
         public int GetPassedCount()
         {
-            return studentlist.Count(s => s.Grade >= 50);
+            return _context.Students.Count(s => s.Grade >= 50);
         }
         public int GetFailedCount()
         {
-            return studentlist.Count(s => s.Grade < 50);
+            return _context.Students.Count(s => s.Grade < 50);
         }
         public void AddStudent(Student student)
         {
-            studentlist.Add(student);
+            _context.Students.Add(student);
+            _context.SaveChanges();
         }
         public bool DeleteStudentById(int id)
         {
             var student = GetStudent(s => s.Id == id);
             if (student == null)
-            {
                 return false;
-            }
-            studentlist.Remove(student);
+            _context.Students.Remove(student);
+            _context.SaveChanges();
             return true;
         }
         public void DeleteStudentByName(string name)
         {
-            var student = GetStudent(s =>s.Name.Equals(name , StringComparison.OrdinalIgnoreCase));
+            var student = GetStudent(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             if (student != null)
-            studentlist.Remove(student);
+            {
+                _context.Students.Remove(student);
+                _context.SaveChanges();
+            }
+                
         }
-        public List<Student> ListStudents(Func<IEnumerable<Student> , IEnumerable<Student>> sorter , Func<Student , bool>? filter = null)
+        public List<Student> ListStudents(Func<IEnumerable<Student>, IEnumerable<Student>> sorter, Func<Student, bool>? filter = null)
         {
-            IEnumerable<Student> students = studentlist;
+            IEnumerable<Student> students = _context.Students;
 
             if (filter != null)
                 students = students.Where(filter);
@@ -83,6 +95,10 @@ namespace ManagerApplicationSystem.Services
 
             return students.ToList();
         }
-        
+
+        public void SaveChanges()
+        {
+            _context.SaveChanges();
+        }
     }
 }
