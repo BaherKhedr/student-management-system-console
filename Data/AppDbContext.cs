@@ -8,22 +8,15 @@ using System.Text;
 
 namespace ManagerApplicationSystem.Data
 {
-    internal class AppDbContext : DbContext
+    public class AppDbContext : DbContext
     {
-        public DbSet<Student> Students { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            base.OnConfiguring(optionsBuilder);
-
-            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-
-            var constr = configuration.GetSection("constr").Value;
-
-            optionsBuilder.UseSqlServer(constr);
-
         }
 
+        public DbSet<Student> Students { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(StudentConfiguration).Assembly);
