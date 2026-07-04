@@ -172,15 +172,6 @@ Student Management System
 - Clean Architecture
 
 ---
-
-## Author
-
-**Baher Khedr**
-
-Junior .NET Developer
-
----
-
 ## What I Learned
 
 While building this project I practiced:
@@ -192,3 +183,14 @@ While building this project I practiced:
 - Configuring Entity Framework Core using Fluent API.
 - Creating and applying EF Core Migrations.
 - Understanding the difference between Runtime and Design-Time DbContext creation.
+---
+
+## Author
+
+**Baher Khedr**
+
+Junior .NET Developer
+
+---
+
+
