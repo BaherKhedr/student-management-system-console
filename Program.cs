@@ -1,7 +1,11 @@
-﻿using ManagerApplicationSystem.Enums;
+﻿using ManagerApplicationSystem.Data;
+using ManagerApplicationSystem.Enums;
 using ManagerApplicationSystem.Helpers;
 using ManagerApplicationSystem.Models;
 using ManagerApplicationSystem.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace StudentManagementSystem
 {
@@ -9,7 +13,20 @@ namespace StudentManagementSystem
     {
         static void Main(string[] args)
         {
-            var studentServices = new StudentService();
+
+            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+
+            var constr = config.GetSection("constr").Value;
+
+            var services = new ServiceCollection();
+
+            services.AddDbContext<AppDbContext>(option => option.UseSqlServer(constr));
+
+            services.AddScoped<StudentService>();
+
+            var provider = services.BuildServiceProvider();
+
+            var studentServices = provider.GetRequiredService<StudentService>();
 
             while (true)
             {
@@ -203,7 +220,7 @@ namespace StudentManagementSystem
                                                 break;
                                         }
                                         break;
-                                    case 4:
+                                    default:
                                         ConsoleHelper.ErrorMessage();
                                         break;
                                 }
@@ -238,8 +255,6 @@ namespace StudentManagementSystem
                                         var deletedStudentUsingId = studentServices.GetStudent(b => b.Id == Id);
                                         if (deletedStudentUsingId != null)
                                         {
-                                            if (deletedStudentUsingId != null)
-                                            {
                                                 Console.ForegroundColor = ConsoleColor.Green;
                                                 Console.WriteLine("Student was found.");
                                                 Console.ResetColor();
@@ -267,7 +282,6 @@ namespace StudentManagementSystem
                                                         break;
                                                 }
                                                 ConsoleHelper.PressAnyKeyToContinue();
-                                            }
                                         }
                                         else
                                         {
@@ -310,7 +324,7 @@ namespace StudentManagementSystem
                                             }
                                             else
                                             {
-                                                ConsoleHelper.ErrorMessage("Student wasn't found or it's duplicated... Use the Id method instead.");
+                                                ConsoleHelper.ErrorMessage("Student wasn't found or it's duplicated... Use the Id instead.");
                                                 ConsoleHelper.PressAnyKeyToContinue();
                                             }
                                         }
@@ -324,6 +338,9 @@ namespace StudentManagementSystem
                                 continue;
 
                             case MenuOptions.List:
+
+                                Console.Clear();
+
                                 if (studentServices.IsEmpty())
                                 {
                                     ConsoleHelper.ErrorMessage("List is empty... No students to delete.");
@@ -403,6 +420,9 @@ namespace StudentManagementSystem
                                 continue;
 
                             case MenuOptions.Update:
+
+                                Console.Clear();
+
                                 if (studentServices.IsEmpty())
                                 {
                                     ConsoleHelper.ErrorMessage("List is empty... No students to update.");
@@ -427,6 +447,9 @@ namespace StudentManagementSystem
                                         case 1:
                                             var updatedStudentName = InputHelper.ReadString("Please enter his new Name:");
                                             studenToUpdate.Name = updatedStudentName;
+
+                                            studentServices.SaveChanges();
+
                                             ConsoleHelper.PrintStudent(studenToUpdate);
                                             break;
                                         case 2:
@@ -445,6 +468,9 @@ namespace StudentManagementSystem
                                                 }
                                             }
                                             studenToUpdate.Age = updatedStudentAge;
+                                            
+                                            studentServices.SaveChanges();
+
                                             ConsoleHelper.PrintStudent(studenToUpdate);
                                             break;
                                         case 3:
@@ -463,6 +489,9 @@ namespace StudentManagementSystem
                                                 }
                                             }
                                             studenToUpdate.Grade = updatedStudentGrade;
+
+                                            studentServices.SaveChanges();
+
                                             ConsoleHelper.PrintStudent(studenToUpdate);
                                             break;
                                         case 4:
@@ -494,6 +523,8 @@ namespace StudentManagementSystem
                                             }
                                             studenToUpdate.Age = updatedStudentAge;
                                             studenToUpdate.Grade = updatedStudentGrade;
+
+                                            studentServices.SaveChanges();
 
                                             ConsoleHelper.PrintStudent(studenToUpdate);
                                             break;
@@ -568,12 +599,20 @@ namespace StudentManagementSystem
                                 continue;
 
                             case MenuOptions.Exit:
+
+                                Console.Clear();
+
                                 Console.ForegroundColor = ConsoleColor.Green;
                                 Console.WriteLine("Application Stopped.");
                                 Console.ResetColor();
                                 return;
                         }
                     }
+                }
+                else
+                {
+                    ConsoleHelper.ErrorMessage();
+                    ConsoleHelper.PressAnyKeyToContinue();
                 }
             }
         }
